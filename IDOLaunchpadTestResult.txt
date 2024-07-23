@@ -1,0 +1,152 @@
+[H[2J[3JNo files changed, compilation skipped
+test/IDOLaunchpadTest.sol:IDOLaunchpadTest
+  ↪ Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 1.52ms (467.75µs CPU time)
+
+Ran 6 tests for test/IDOLaunchpadTest.sol:IDOLaunchpadTest
+[PASS] testClaimFailed() (gas: 68614)
+Traces:
+  [70812] IDOLaunchpadTest::testClaimFailed()
+    ├─ [0] VM::deal(IDOLaunchpad: [0x2e234DAe75C793f67A35089C9d99245E1C58470b], 99000000000000000000 [9.9e19])
+    │   └─ ← [Return] 
+    ├─ [0] VM::startPrank(user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D])
+    │   └─ ← [Return] 
+    ├─ [0] VM::deal(user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D], 100000000000000000 [1e17])
+    │   └─ ← [Return] 
+    ├─ [26185] IDOLaunchpad::presale{value: 100000000000000000}()
+    │   ├─ emit PreSale(user: user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D], amount: 100000000000000000 [1e17])
+    │   └─ ← [Stop] 
+    ├─ [0] VM::warp(2592002 [2.592e6])
+    │   └─ ← [Return] 
+    ├─ [265] IDOLaunchpad::isSuccess() [staticcall]
+    │   └─ ← [Return] false
+    ├─ [34013] IDOLaunchpad::claim()
+    │   ├─ [0] user::fallback{value: 100000000000000000}()
+    │   │   └─ ← [Stop] 
+    │   ├─ emit Claim(user: user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D], amount: 100000000000000000 [1e17])
+    │   └─ ← [Stop] 
+    ├─ [530] IDOLaunchpad::balances(user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D]) [staticcall]
+    │   └─ ← [Return] 0
+    ├─ [0] VM::assertEq(0, 0) [staticcall]
+    │   └─ ← [Return] 
+    ├─ [2645] RNTToken::balanceOf(user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D]) [staticcall]
+    │   └─ ← [Return] 0
+    ├─ [0] VM::assertEq(0, 0) [staticcall]
+    │   └─ ← [Return] 
+    ├─ [0] VM::assertEq(100000000000000000 [1e17], 100000000000000000 [1e17]) [staticcall]
+    │   └─ ← [Return] 
+    ├─ [0] VM::stopPrank()
+    │   └─ ← [Return] 
+    └─ ← [Stop] 
+
+[PASS] testClaimSuccess() (gas: 71734)
+Traces:
+  [73308] IDOLaunchpadTest::testClaimSuccess()
+    ├─ [0] VM::deal(IDOLaunchpad: [0x2e234DAe75C793f67A35089C9d99245E1C58470b], 99900000000000000000 [9.99e19])
+    │   └─ ← [Return] 
+    ├─ [0] VM::startPrank(user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D])
+    │   └─ ← [Return] 
+    ├─ [0] VM::deal(user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D], 100000000000000000 [1e17])
+    │   └─ ← [Return] 
+    ├─ [26185] IDOLaunchpad::presale{value: 100000000000000000}()
+    │   ├─ emit PreSale(user: user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D], amount: 100000000000000000 [1e17])
+    │   └─ ← [Stop] 
+    ├─ [0] VM::warp(2592002 [2.592e6])
+    │   └─ ← [Return] 
+    ├─ [378] IDOLaunchpad::isSuccess() [staticcall]
+    │   └─ ← [Return] true
+    ├─ [42116] IDOLaunchpad::claim()
+    │   ├─ [34697] RNTToken::transfer(user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D], 1000)
+    │   │   ├─ emit Transfer(from: IDOLaunchpad: [0x2e234DAe75C793f67A35089C9d99245E1C58470b], to: user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D], value: 1000)
+    │   │   └─ ← [Return] true
+    │   ├─ emit Claim(user: user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D], amount: 100000000000000000 [1e17])
+    │   └─ ← [Stop] 
+    ├─ [530] IDOLaunchpad::balances(user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D]) [staticcall]
+    │   └─ ← [Return] 0
+    ├─ [0] VM::assertEq(0, 0) [staticcall]
+    │   └─ ← [Return] 
+    ├─ [645] RNTToken::balanceOf(user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D]) [staticcall]
+    │   └─ ← [Return] 1000
+    ├─ [0] VM::assertEq(1000, 1000) [staticcall]
+    │   └─ ← [Return] 
+    ├─ [0] VM::stopPrank()
+    │   └─ ← [Return] 
+    └─ ← [Stop] 
+
+[PASS] testPresale() (gas: 45675)
+Traces:
+  [45675] IDOLaunchpadTest::testPresale()
+    ├─ [0] VM::startPrank(user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D])
+    │   └─ ← [Return] 
+    ├─ [0] VM::deal(user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D], 20000000000000000 [2e16])
+    │   └─ ← [Return] 
+    ├─ [26185] IDOLaunchpad::presale{value: 20000000000000000}()
+    │   ├─ emit PreSale(user: user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D], amount: 20000000000000000 [2e16])
+    │   └─ ← [Stop] 
+    ├─ [530] IDOLaunchpad::balances(user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D]) [staticcall]
+    │   └─ ← [Return] 20000000000000000 [2e16]
+    ├─ [0] VM::assertEq(20000000000000000 [2e16], 20000000000000000 [2e16]) [staticcall]
+    │   └─ ← [Return] 
+    ├─ [0] VM::stopPrank()
+    │   └─ ← [Return] 
+    └─ ← [Stop] 
+
+[PASS] testPresaleFailed() (gas: 20931)
+Traces:
+  [20931] IDOLaunchpadTest::testPresaleFailed()
+    ├─ [0] VM::startPrank(user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D])
+    │   └─ ← [Return] 
+    ├─ [0] VM::deal(user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D], 200000000000000000 [2e17])
+    │   └─ ← [Return] 
+    ├─ [0] VM::expectRevert(Buy amount too high)
+    │   └─ ← [Return] 
+    ├─ [2592] IDOLaunchpad::presale{value: 200000000000000000}()
+    │   └─ ← [Revert] revert: Buy amount too high
+    ├─ [0] VM::stopPrank()
+    │   └─ ← [Return] 
+    └─ ← [Stop] 
+
+[PASS] testPresaleMinBuyAmountFailed() (gas: 20928)
+Traces:
+  [20928] IDOLaunchpadTest::testPresaleMinBuyAmountFailed()
+    ├─ [0] VM::startPrank(user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D])
+    │   └─ ← [Return] 
+    ├─ [0] VM::deal(user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D], 2000000000000000 [2e15])
+    │   └─ ← [Return] 
+    ├─ [0] VM::expectRevert(Buy amount too low)
+    │   └─ ← [Return] 
+    ├─ [2567] IDOLaunchpad::presale{value: 2000000000000000}()
+    │   └─ ← [Revert] revert: Buy amount too low
+    ├─ [0] VM::stopPrank()
+    │   └─ ← [Return] 
+    └─ ← [Stop] 
+
+[PASS] testWithdrawSuccess() (gas: 56011)
+Traces:
+  [56011] IDOLaunchpadTest::testWithdrawSuccess()
+    ├─ [0] VM::startPrank(user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D])
+    │   └─ ← [Return] 
+    ├─ [0] VM::deal(IDOLaunchpad: [0x2e234DAe75C793f67A35089C9d99245E1C58470b], 99900000000000000000 [9.99e19])
+    │   └─ ← [Return] 
+    ├─ [0] VM::deal(user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D], 100000000000000000 [1e17])
+    │   └─ ← [Return] 
+    ├─ [26185] IDOLaunchpad::presale{value: 100000000000000000}()
+    │   ├─ emit PreSale(user: user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D], amount: 100000000000000000 [1e17])
+    │   └─ ← [Stop] 
+    ├─ [0] VM::stopPrank()
+    │   └─ ← [Return] 
+    ├─ [0] VM::warp(2592002 [2.592e6])
+    │   └─ ← [Return] 
+    ├─ [378] IDOLaunchpad::isSuccess() [staticcall]
+    │   └─ ← [Return] true
+    ├─ [11116] IDOLaunchpad::withdraw()
+    │   ├─ [55] IDOLaunchpadTest::receive{value: 100000000000000000000}()
+    │   │   └─ ← [Stop] 
+    │   ├─ emit Withdraw(user: IDOLaunchpadTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], amount: 100000000000000000000 [1e20])
+    │   └─ ← [Stop] 
+    ├─ [0] VM::assertEq(0, 0) [staticcall]
+    │   └─ ← [Return] 
+    └─ ← [Stop] 
+
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 1.52ms (467.75µs CPU time)
+
+Ran 1 test suite in 179.37ms (1.52ms CPU time): 6 tests passed, 0 failed, 0 skipped (6 total tests)
