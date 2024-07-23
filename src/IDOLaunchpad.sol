@@ -22,7 +22,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract IDOLaunchpad is Ownable {
     IERC20 public idoToken;
 
-    uint256 public constant SALE_TOKEN = 1_000_000 * 10 ** 18; // 预售数量：100 万
+    uint256 public constant SALE_TOKEN = 1_000_000; // 预售数量：100 万
     uint256 public constant SALE_PRICE = 0.0001 ether; // 预售价格：0.0001 ETH
     uint256 public constant MAX_SALE_AMOUNT_TOTAL = 200 ether;
     uint256 public constant SALE_LIMIT_AMOUNT_TOTAL = 100 ether;
@@ -65,10 +65,7 @@ contract IDOLaunchpad is Ownable {
 
     modifier onlyActiveSale() {
         require(block.timestamp < saleEndTime, "sale ended");
-        require(
-            address(this).balance < SALE_LIMIT_AMOUNT_TOTAL,
-            "sale successful"
-        );
+
         require(
             address(this).balance + msg.value <= MAX_SALE_AMOUNT_TOTAL,
             "Sale amount too high"
@@ -82,8 +79,6 @@ contract IDOLaunchpad is Ownable {
 
         // 参与预售所支付的 ETH 费用
         balances[msg.sender] += msg.value;
-
-        idoToken.transfer(msg.sender, msg.value / SALE_PRICE);
 
         emit PreSale(msg.sender, msg.value);
     }
@@ -107,6 +102,7 @@ contract IDOLaunchpad is Ownable {
         uint256 totalETH = address(this).balance;
         require(amount > 0, "No balance to claim");
         balances[msg.sender] = 0;
+
         if (success) {
             idoToken.transfer(msg.sender, (SALE_TOKEN * amount) / totalETH);
             emit Claim(msg.sender, amount);
@@ -121,12 +117,12 @@ contract IDOLaunchpad is Ownable {
         //  预售成功，项目方可提现募集的ETH；
         require(isSuccess(), "Cannot withdraw immediately sale not successful");
 
-        uint256 saleAmount = address(this).balance;
+        uint256 balance = address(this).balance;
 
-        (bool success, ) = msg.sender.call{value: saleAmount}("");
+        (bool success, ) = msg.sender.call{value: balance}("");
         require(success, "Transfer failed");
 
-        emit Withdraw(msg.sender, saleAmount);
+        emit Withdraw(msg.sender, balance);
     }
 
     function isSuccess() public view returns (bool) {
