@@ -125,6 +125,9 @@ contract IDOLaunchpad is Ownable, ReentrancyGuard {
         require(isSuccess(), "Cannot withdraw immediately sale not successful");
 
         uint256 balance = address(this).balance;
+        assert(balance > 0);
+
+        require(balance == totalFundsRaisedETH, "Balance mismatch");
 
         (bool success, ) = msg.sender.call{value: balance}("");
         require(success, "Transfer failed");
@@ -137,12 +140,4 @@ contract IDOLaunchpad is Ownable, ReentrancyGuard {
             totalFundsRaisedETH >= SALE_LIMIT_AMOUNT_TOTAL &&
             block.timestamp >= saleEndTime;
     }
-
-    receive() external payable {
-        emit Received(msg.sender, msg.value);
-
-        totalFundsRaisedETH += msg.value;
-    }
-
-    event Received(address Sender, uint Value);
 }
