@@ -50,12 +50,24 @@ contract IDOLaunchpadTest is Test {
     }
 
     function testClaimSuccess() public {
-        vm.deal(address(ido), 99.9 ether);
+        (bool ok, ) = address(ido).call{value: 99.9 ether}("");
+        require(ok, "Failed to send ETH to contract");
+
+        assertEq(
+            ido.totalFundsRaisedETH(),
+            99.9 ether,
+            "totalFundsRaisedETH should be 100 ether"
+        );
         vm.startPrank(user);
         vm.deal(user, 0.1 ether);
         ido.presale{value: 0.1 ether}();
 
         vm.warp(block.timestamp + 30 days + 1);
+        assertEq(
+            ido.totalFundsRaisedETH(),
+            100 ether,
+            "totalFundsRaisedETH should be 100 ether"
+        );
         require(ido.isSuccess(), "IDO failed");
 
         ido.claim();
@@ -83,8 +95,10 @@ contract IDOLaunchpadTest is Test {
     }
 
     function testWithdrawSuccess() public {
+        (bool ok, ) = address(ido).call{value: 99.9 ether}("");
+        require(ok, "Failed to send ETH to contract");
         vm.startPrank(user);
-        vm.deal(address(ido), 99.9 ether);
+
         vm.deal(user, 0.1 ether);
         ido.presale{value: 0.1 ether}();
         vm.stopPrank();

@@ -4,6 +4,8 @@ pragma solidity ^0.8.20;
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+// https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/ReentrancyGuard.sol
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title IDO 合约，实现 Token 预售
@@ -19,7 +21,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
     ：预售门槛：单笔最低买入 0.01 ETH 最高买入 0.1 ETH
     ：募集目标：0.0001 ETH * 1_000_000 = 100 ETH 最多 200 ETH
  */
-contract IDOLaunchpad is Ownable {
+contract IDOLaunchpad is Ownable, ReentrancyGuard {
     IERC20 public idoToken;
 
     uint256 public constant SALE_TOKEN = 1_000_000; // 预售数量：100 万
@@ -28,6 +30,7 @@ contract IDOLaunchpad is Ownable {
     uint256 public constant SALE_LIMIT_AMOUNT_TOTAL = 100 ether;
     uint256 public constant MIN_BUY_AMOUNT = 0.01 ether;
     uint256 public constant MAX_BUY_AMOUNT = 0.1 ether;
+    uint256 public totalFundsRaisedETH; // 本合约中总共已经筹集到的ETH资金数量
 
     // 保存每个地址购买的数量
     mapping(address => uint256) public balances;
@@ -57,7 +60,7 @@ contract IDOLaunchpad is Ownable {
 
     modifier onlySuccessfulSale() {
         require(
-            address(this).balance >= SALE_LIMIT_AMOUNT_TOTAL,
+            totalFundsRaisedETH >= SALE_LIMIT_AMOUNT_TOTAL,
             "sale not successful"
         );
         _;
@@ -67,7 +70,7 @@ contract IDOLaunchpad is Ownable {
         require(block.timestamp < saleEndTime, "sale ended");
 
         require(
-            address(this).balance + msg.value <= MAX_SALE_AMOUNT_TOTAL,
+            totalFundsRaisedETH + msg.value <= MAX_SALE_AMOUNT_TOTAL,
             "Sale amount too high"
         );
         _;
@@ -79,6 +82,8 @@ contract IDOLaunchpad is Ownable {
 
         // 参与预售所支付的 ETH 费用
         balances[msg.sender] += msg.value;
+
+        totalFundsRaisedETH += msg.value;
 
         emit PreSale(msg.sender, msg.value);
     }
@@ -95,16 +100,18 @@ contract IDOLaunchpad is Ownable {
      *  2. 募集的ETH低于100ETH，则预售失败，将购买者支付的ETH退回
      *
      */
-    function claim() external {
+    function claim() external nonReentrant {
         bool success = isSuccess();
         uint256 amount = balances[msg.sender];
         // IDO 募集的ETH
-        uint256 totalETH = address(this).balance;
         require(amount > 0, "No balance to claim");
         balances[msg.sender] = 0;
 
         if (success) {
-            idoToken.transfer(msg.sender, (SALE_TOKEN * amount) / totalETH);
+            idoToken.transfer(
+                msg.sender,
+                (SALE_TOKEN * amount) / totalFundsRaisedETH
+            );
             emit Claim(msg.sender, amount);
         } else {
             (bool ok, ) = msg.sender.call{value: amount}("");
@@ -127,7 +134,15 @@ contract IDOLaunchpad is Ownable {
 
     function isSuccess() public view returns (bool) {
         return
-            address(this).balance >= SALE_LIMIT_AMOUNT_TOTAL &&
+            totalFundsRaisedETH >= SALE_LIMIT_AMOUNT_TOTAL &&
             block.timestamp >= saleEndTime;
     }
+
+    receive() external payable {
+        emit Received(msg.sender, msg.value);
+
+        totalFundsRaisedETH += msg.value;
+    }
+
+    event Received(address Sender, uint Value);
 }
